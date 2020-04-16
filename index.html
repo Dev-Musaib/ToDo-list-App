@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do list</title>
+</head>
+
+<body>
+    <header id="main-header" class="bg-success text-white p-4 mb-3">
+        <div class="container" style="margin: auto;">
+            <div class="row" style="margin: 0 auto; width: 100%;">
+                <div class="col-md-6" style="margin: auto;">
+                    <h1 id="header-title"
+                        style="text-align: center; font-family: Amatic SC; font-weight: 600; text-decoration: underline;">
+                        To-Do
+                        List App</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div id="main" class="card card-body">
+            <h2 class="title" style="font-family: Caveat; font-size: 3em; text-decoration: underline; color: #3632a8;">
+                Add
+                To-Do's</h2>
+            <form id="addForm" class="form-inline mb-3">
+                <input type="text" class="form-control mr-2" id="item" />
+                <input type="submit" class="btn btn-dark" value="Add" style="font-family: Bahnschrift;">
+            </form>
+            <h2 class="title"
+                style="text-align: center; font-family: kaushan Script; margin-top: 0.6em; color: #a84e32;">
+                To-Do's:
+            </h2>
+            <ul id="items" class="list-group">
+
+            </ul>
+        </div>
+    </div>
+
+    <!-- <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/s-dB1ZLlz-Q"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media;
+      gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe> -->
+
+    <script src="app.js"></script>
+</body>
+
+</html>
