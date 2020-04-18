@@ -1,8 +1,10 @@
 const form = document.getElementById('addForm');
 const itemList = document.getElementById('items');
+const filterItems = document.querySelector('.form-control');
 
 form.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
+filterItems.addEventListener('keyup', filterOut)
 
 function addItem(e) {
     e.preventDefault();
@@ -24,6 +26,7 @@ function addItem(e) {
 
     li.appendChild(document.createTextNode(inp));
 
+
     itemList.appendChild(li);
 
 }
@@ -31,9 +34,25 @@ function addItem(e) {
 
 function removeItem(e) {
     if (e.target.classList.contains('delete')) {
-        if (confirm('Are you sure?')) {
-            var li = e.target.parentElement;
-            itemList.removeChild(li)
-        }
+
+        var li = e.target.parentElement;
+        itemList.removeChild(li)
+
     }
+}
+
+function filterOut(e) {
+    var text = e.target.value.toLowerCase();
+    var items = itemList.getElementsByTagName('li');
+
+    Array.from(items).forEach((item) => {
+        var itemName = item.lastChild.textContent;
+
+        if (itemName.toLowerCase().indexOf(text) != -1) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none'
+        }
+    });
+
 }
