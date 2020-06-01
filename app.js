@@ -1,136 +1,238 @@
-// Define UI variables
-const form = document.querySelector("#task-form");
-const taskList = document.querySelector(".collection");
-const clearBtn = document.querySelector(".clear-tasks");
-const filter = document.querySelector("#filter");
-const taskInput = document.querySelector("#task");
-
-// Event Handler
-form.addEventListener('submit', addTask);
-document.addEventListener('DOMContentLoaded', getTaskFromLocalStorage);
-taskList.addEventListener('click', removeTask);
-clearBtn.addEventListener('click', clearTasks);
-filter.addEventListener('keyup', filterTasks);
-
-// Add Task
-function addTask(e) {
-  e.preventDefault();
-
-  const li = document.createElement('li');
-  const link = document.createElement('a');
-
-  li.className = 'collection-item';
-  link.className = 'delete-item secondary-content'
-
-  link.innerHTML = '<i class= "fa fa-remove"></i>';
-
-  li.appendChild(document.createTextNode(taskInput.value));
-  li.appendChild(link);
-
-  taskList.appendChild(li);
-  addTaskToLocalStorage(taskInput.value);
+// Class Task
+class Task {
+  constructor(taskName, taskDate) {
+    this.taskName = taskName;
+    this.taskDate = taskDate;
+  }
 }
 
-// Add Task to LS
-function addTaskToLocalStorage(taskInput) {
-  let tasks;
-  if (localStorage.getItem('tasks') === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem('tasks'));
+// Class UI
+class UI {
+
+  // Clear Alert
+  clearAlert() {
+    const alert = document.querySelector('.alert');
+
+    if (alert) {
+      alert.remove()
+    }
   }
 
-  tasks.push(taskInput);
+  // Show Alert
+  showAlert(message, className) {
 
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}
+    // Clear Alert to prevent multiple alerts
+    this.clearAlert();
+    // Create New Div
+    const errorDiv = document.createElement('div');
+    // Add Class Name
+    errorDiv.className = `alert ${className}`;
+    // Append Text Node
+    errorDiv.appendChild(document.createTextNode(message));
 
-// Get Task from LS
-function getTaskFromLocalStorage() {
+    // Grab the Containers
+    const container = document.querySelector('.container');
+    const containerChild = document.querySelector('#heading');
 
-  let tasks;
-  if (localStorage.getItem('tasks') === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem('tasks'));
+    // Insert the Div
+    container.insertBefore(errorDiv, containerChild);
+
+    // Set Timeout
+    setTimeout(() => {
+      document.querySelector('.alert').remove()
+    }, 2000)
   }
 
-  tasks.forEach(task => {
+  // Add Task to List
+  addTaskToList(task, taskList) {
+    // Create New li
     const li = document.createElement('li');
-    const link = document.createElement('a');
-
-    li.className = 'collection-item';
-    link.className = 'delete-item secondary-content'
-
-    link.innerHTML = '<i class= "fa fa-remove"></i>';
-
-    li.appendChild(document.createTextNode(task));
-    li.appendChild(link);
-
+    // Add Class Name
+    li.className = 'task-list-item';
+    // Append Inner HTML
+    li.innerHTML = `
+    <h1 id="output-title">${task.taskName}</h1>
+    <i class="fa fa-trash"></i>
+    <p id="output-para">${task.taskDate.toDateString()}</p>
+  `;
+    // Append to the list
     taskList.appendChild(li);
-  })
-}
-
-// Remove Task
-function removeTask(e) {
-  if (e.target.parentElement.classList.contains('delete-item')) {
-    const li = e.target.parentElement.parentElement;
-    taskList.removeChild(li);
-
-    removeTaskFromLocalStorage(e.target.parentElement.parentElement);
-  }
-}
-
-// Remove Task from LS
-function removeTaskFromLocalStorage(taskValue) {
-  let tasks;
-  if (localStorage.getItem('tasks') === null) {
-    tasks = [];
-  } else {
-    tasks = JSON.parse(localStorage.getItem('tasks'));
   }
 
-  tasks.forEach((task, index) => {
-    if (task === taskValue.textContent) {
-      tasks.splice(index, 1);
-    }
-  })
+  // Clear Input Fields
+  clearFields(taskInput) {
+    taskInput.value = '';
+  }
 
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-// Clear Tasks
-function clearTasks(e) {
-  const lis = document.querySelectorAll('.collection-item');
-
-  if (taskList.children.length < 1) {
-    alert('Nothing to clear!')
-  } else {
-    if (confirm('Are you sure?')) {
-      for (task of lis) {
-        taskList.removeChild(task);
-      }
-      clearTasksFromLocalStorage();
+  // Delete Task From List
+  deleteTaskFromList(target) {
+    if (target.classList.contains('fa-trash')) {
+      target.parentElement.remove();
     }
   }
-}
 
-// Clear Tasks from LS
-function clearTasksFromLocalStorage(e) {
-  localStorage.clear();
-}
-
-// Filter Tasks
-function filterTasks(e) {
-  const filterInput = e.target.value.toLowerCase();
-  const lis = document.querySelectorAll('.collection-item');
-
-  lis.forEach(task => {
-    if (task.textContent.toLowerCase().indexOf(filterInput) !== -1) {
-      task.style.display = 'block';
+  // Clear Tasks From List
+  clearTasksFromList() {
+    // Get List Items
+    const tasks = document.querySelectorAll('.task-list-item');
+    // Check for tasks
+    if (tasks.length < 1) {
+      this.showAlert('Nothing to clear!', 'alert-danger')
     } else {
-      task.style.display = 'none';
+      // Confirmation
+      if (confirm('Are You Sure?')) {
+        // Loop Over each item and remove it
+        tasks.forEach((task) => {
+          task.remove();
+        })
+      }
     }
-  })
+  }
 
+  // Filter Tasks in the List
+  filterTasks(target) {
+    // Private Variables
+    let text = target.toLowerCase();
+
+    // Get List Items
+    const tasks = document.querySelectorAll('.task-list-item');
+
+    // Check for tasks
+    if (tasks.length < 1) {
+      this.showAlert('Nothing to Filter!', 'alert-danger')
+    } else {
+      tasks.forEach((task) => {
+        if (task.textContent.toLowerCase().indexOf(text) !== -1) {
+          task.style.display = 'block';
+        } else {
+          task.style.display = 'none';
+        }
+      })
+    }
+  }
 }
+
+// Class Local Storage
+class Store {
+  static getTaskFromLS() {
+    let tasks;
+    if (localStorage.getItem('tasks') === null) {
+      tasks = [];
+    } else {
+      tasks = JSON.parse(localStorage.getItem('tasks'));
+    }
+    return tasks;
+  }
+
+  static addTaskToLS(task) {
+    // Get Tasks From LS
+    const tasks = Store.getTaskFromLS();
+    // Push to tasks
+    tasks.push(task);
+    // Set Local Storage
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  static displayTasksFromLS() {
+    // Get Tasks From LS
+    const tasks = Store.getTaskFromLS();
+
+    // Loop over each Task
+    tasks.forEach(task => {
+
+      task.taskDate = new Date(task.taskDate);
+
+      // Create New li
+      const li = document.createElement('li');
+      // Add Class Name
+      li.className = 'task-list-item';
+      // Append Inner HTML
+      li.innerHTML = `
+      <h1 id="output-title">${task.taskName}</h1>
+      <i class="fa fa-trash"></i>
+      <p id="output-para">${task.taskDate.toDateString()}</p>`;
+
+      // Append to the list
+      document.querySelector('#task-list').appendChild(li);
+    })
+  }
+
+  static deleteTaskFromLS(target) {
+
+    // Get Tasks From LS
+    const tasks = Store.getTaskFromLS();
+
+    // Iterate over Tasks and remove the selected one
+    tasks.forEach((task, index) => {
+      task.taskDate = new Date(task.taskDate);
+
+      // Validate Item
+      if (target.parentElement.innerHTML.indexOf(task.taskName) !== -1 && target.parentElement.innerHTML.indexOf(task.taskDate.toDateString()) !== -1) {
+
+        // Remove Item
+        tasks.splice(index, 1)
+      }
+    })
+    // Set Local Storage
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  }
+
+  static clearTasksFromLS() {
+    localStorage.clear()
+  }
+}
+
+// Class Main
+class Main {
+  static init() {
+    // UI Variables
+    const taskInput = document.getElementById('task');
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const clearTasksBtn = document.getElementById('clear-tasks-btn');
+    const filterInput = document.getElementById('task-list-filter');
+    const taskList = document.getElementById('task-list');
+
+    // Instantiate UI
+    const ui = new UI();
+
+    // DOM Loaded Event
+    document.addEventListener('DOMContentLoaded', Store.displayTasksFromLS);
+
+    // Click Event
+    addTaskBtn.addEventListener('click', () => {
+      // Validation
+      if (taskInput.value === '') {
+        ui.showAlert('Please add a task!', 'alert-danger');
+      } else {
+        // New Date
+        const now = new Date();
+        // Instantiate Task
+        const task = new Task(taskInput.value, now);
+        // Add Task To List & LS
+        ui.addTaskToList(task, taskList);
+        Store.addTaskToLS(task);
+        // Clear Input
+        ui.clearFields(taskInput);
+      }
+    })
+
+    // Delete Event
+    taskList.addEventListener('click', function (e) {
+      ui.deleteTaskFromList(e.target);
+      Store.deleteTaskFromLS(e.target);
+    })
+
+    // Clear Event
+    clearTasksBtn.addEventListener('click', () => {
+      ui.clearTasksFromList();
+      Store.clearTasksFromLS();
+    })
+
+    // Filter Event
+    filterInput.addEventListener('keyup', (e) => {
+      ui.filterTasks(e.target.value);
+    })
+  }
+}
+
+Main.init();
