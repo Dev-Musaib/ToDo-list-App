@@ -12,6 +12,10 @@
   color: whitesmoke;
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Asap:wght@500&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");
+
 
 * {
   margin: 0;
@@ -111,6 +115,7 @@ body {
   height: auto;
   background-color: #222;
   width: 70%;
+  margin-bottom: 3em;
 }
 
 .task-list-item {
