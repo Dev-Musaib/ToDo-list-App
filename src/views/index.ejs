@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="container">
+    <form method="POST" action="/todos" id="add-task">
+
+      <input type="text" id="task" name="todo" placeholder="Enter a task" onfocus="this.placeholder=''"
+        onblur="this.placeholder='Enter a task'"> <br>
+
+      <button type="submit" id="add-task-btn">
+        Add Task
+      </button>
+    </form>
+
+    <div id="heading">
+      <header id="task-list-header">
+        <h1>Tasks</h1>
+        <input type="text" id="task-list-filter" placeholder="Filter Tasks" onfocus="this.placeholder=''"
+          onblur="this.placeholder='Filter Tasks'">
+      </header>
+    </div>
+
+    <ul id="task-list">
+        <% todos.forEach(todo => { %>
+            <li class="task-list-item">
+                <h1 id="output-title"><%= todo.todo %> </h1>
+                <form method="POST" action="/todos/<%= todo.id %>?_method=DELETE">
+                  <button class="fa fa-trash" id="delete-todo" type="submit"></button>
+                </form>
+                <p id="output-para"><%= todo.date.toLocaleDateString() %> </p>
+            </li>
+        <% }) %>
+    </ul>
+
+  </div>
+</body>
+
+
+  <script>
+    // UI Variables
+    const filterInput = document.getElementById("task-list-filter");
+
+    // Filter Event
+    filterInput.addEventListener("keyup", (e) => {
+      let text = e.target.value.toLowerCase();
+
+      const tasks = document.querySelectorAll(".task-list-item");
+
+      tasks.forEach((task) => {
+        if (task.textContent.toLowerCase().indexOf(text) !== -1) {
+          task.style.display = "block";
+        } else {
+          task.style.display = "none";
+        }
+      });
+    });
+  </script>
+
+</html>
